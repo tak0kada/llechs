@@ -1,0 +1,10 @@
+#!/bin/bash
+
+docker run \
+    --net host \
+    -u $UID:`id -g` \
+    -e DISPLAY=$DISPLAY \
+    -v $HOME/.Xauthority:/root/.Xauthority \
+    -v /:/hostroot \
+    -it --rm tak0kada/crest_fairing \
+    spinxFairingFast $@

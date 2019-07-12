@@ -1,0 +1,15 @@
+[submodule "thirdparty/IsoSurfaceExtraction"]
+	path = thirdparty/IsoSurfaceExtraction
+	url = https://github.com/mkazhdan/IsoSurfaceExtraction.git
+[submodule "shell"]
+	path = shell
+	url = https://github.com/tak0kada/shell.git
+[submodule "cpp/include/spherical_harmonics"]
+	path = cpp/include/spherical_harmonics
+	url = https://github.com/tak0kada/spherical_harmonics.git
+[submodule "cpp/include/cnthd"]
+	path = cpp/include/cnthd
+	url = https://github.com/tak0kada/cnthd.git
+[submodule "cpp/include/althloothi"]
+	path = cpp/include/althloothi
+	url = https://github.com/tak0kada/althloothi.git

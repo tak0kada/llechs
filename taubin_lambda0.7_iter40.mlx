@@ -1,0 +1,9 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+ <filter name="Taubin Smooth">
+  <Param name="lambda"        value="0.7"    type="RichFloat"/>
+  <Param name="mu"            value="-0.714"  type="RichFloat"/>
+  <Param name="stepSmoothNum" value="40"     type="RichInt"/>
+  <Param name="Selected"      value="false"  type="RichBool"/>
+ </filter>
+</FilterScript>

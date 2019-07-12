@@ -1,0 +1,562 @@
+#define BOOST_TEST_MAIN
+#include <boost/test/included/unit_test.hpp>
+#include <boost/test/tools/detail/tolerance_manip.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <vector>
+#include <iostream>
+#include "calc_coef.hpp"
+#include "./include/cnthd/mesh.hpp"
+#include "./include/unitsp.hpp"
+
+
+using namespace cnthd;
+using cnthd::distribution::calc_coef;
+
+BOOST_AUTO_TEST_CASE(test_calc_coef_x)
+{
+    {
+        Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+        to_unit_sphere(mesh);
+
+        std::size_t nV{mesh.nV};
+        std::vector<double> data{};
+        data.reserve(nV);
+        for (const auto& v: mesh.vertex)
+        {
+            data.emplace_back(v.x());
+        }
+
+        BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+
+        BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+        BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+        BOOST_TEST(calc_coef(mesh, 1,  1, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+
+        for (std::size_t l = 2; l < 6; ++l)
+        {
+            for (std::size_t m = -l; m <= l; ++m)
+            {
+                BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+            }
+        }
+    }
+
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.x());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 2; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     // {
+//     //     Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/sphere_large.obj");
+//     //     to_unit_sphere(mesh);
+//     //
+//     //     std::size_t nV{mesh.nV};
+//     //     std::vector<double> data{};
+//     //     data.reserve(nV);
+//     //     for (const auto& v: mesh.vertex)
+//     //     {
+//     //         data.emplace_back(v.x());
+//     //     }
+//     //
+//     //     BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//     //
+//     //     BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//     //     BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//     //     BOOST_TEST(calc_coef(mesh, 1,  1, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+//     //
+//     //     for (std::size_t l = 2; l < 6; ++l)
+//     //     {
+//     //         for (std::size_t m = -l; m <= l; ++m)
+//     //         {
+//     //             BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//     //         }
+//     //     }
+//     // }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_y)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.y());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 1; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.y());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 2; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_z)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.z());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 1; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.z());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == std::sqrt(4. / 3 * pi), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 2; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_xy)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.x() * v.y());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 2 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.x() * v.y());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 2 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_yz)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.y() * v.z());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 2 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.y() * v.z());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 2 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_x2y2z2)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             const real_t x{v.x()};
+//             const real_t y{v.y()};
+//             const real_t z{v.z()};
+//             data.emplace_back(-x*x - y*y + 2*z*z);
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 4 * std::sqrt(pi / 5), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             const real_t x{v.x()};
+//             const real_t y{v.y()};
+//             const real_t z{v.z()};
+//             data.emplace_back(-x*x - y*y + 2*z*z);
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 4 * std::sqrt(pi / 5), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_zx)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.z() * v.x());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 2 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.z() * v.x());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 2 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+// }
+//
+// BOOST_AUTO_TEST_CASE(test_calc_coef_x2y2)
+// {
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/DDGSpring2016/cube.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.x() * v.x() - v.y() * v.y());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 4 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+//
+//     {
+//         Mesh mesh = read_obj("./cnthd/test/data/sphere.obj");
+//         to_unit_sphere(mesh);
+//
+//         std::size_t nV{mesh.nV};
+//         std::vector<double> data{};
+//         data.reserve(nV);
+//         for (const auto& v: mesh.vertex)
+//         {
+//             data.emplace_back(v.x() * v.x() - v.y() * v.y());
+//         }
+//
+//         BOOST_TEST(calc_coef(mesh, 0,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 1, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 1,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//
+//         BOOST_TEST(calc_coef(mesh, 2, -2, data) == 0., boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2, -1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  0, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  1, data) == 0. , boost::test_tools::tolerance(1e-12));
+//         BOOST_TEST(calc_coef(mesh, 2,  2, data) == 4 * std::sqrt(pi / 15), boost::test_tools::tolerance(1e-12));
+//
+//         for (std::size_t l = 3; l < 6; ++l)
+//         {
+//             for (std::size_t m = -l; m <= l; ++m)
+//             {
+//                 BOOST_TEST(calc_coef(mesh, l, m, data) == 0. , boost::test_tools::tolerance(1e-12));
+//             }
+//         }
+//     }
+}

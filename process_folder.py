@@ -27,7 +27,6 @@ parser.add_argument('--input')
 parser.add_argument('--output')
 args = parser.parse_args()
 
-
 # INPUT_DIR = Path("/path/to/gc-50_0.2_1_0.2/each/t0001")
 INPUT_DIR = Path(args.input).resolve()
 # OUTPUT_DIR = INPUT_DIR.parents[4] / "output"
@@ -42,6 +41,7 @@ LOG_DIR = OUTPUT_DIR / "log" / experiment
 os.makedirs(LOG_DIR, exist_ok=True)
 
 os.chdir(Path(__file__).parent)
+
 
 #-------------------------------------------------------------------------------
 # tif.gz -> bin
@@ -175,6 +175,7 @@ for f in OBJ_DIR0.iterdir():
     shell.exec("./bin/spinxFairingFast {input} -0.95 {n_iter} {output}"
                " > /dev/null 2>&1" # silence the error log
                .format(input=input, output=output, n_iter=N_ITER_FAIRING))
+
 
 #-------------------------------------------------------------------------------
 # Sphere Harmonics Expansion

@@ -13,3 +13,6 @@
 [submodule "cpp/include/althloothi"]
 	path = cpp/include/althloothi
 	url = https://github.com/tak0kada/althloothi.git
+[submodule "cpp/include/happly"]
+	path = cpp/include/happly
+	url = https://github.com/nmwsharp/happly.git

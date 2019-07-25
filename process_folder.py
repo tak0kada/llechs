@@ -153,7 +153,7 @@ for f in PLY_DIR2.iterdir():
     g = OBJ_DIR0 / (name + ".obj")
     try:
         shell.exec(
-            "meshlabserver -i {} -o {} -s {}".format(f, g, "./taubin_lambda0.7_iter40.mlx"),
+            "meshlabserver -i {} -o {} -s {}".format(f, g, "./mlx/taubin_lambda0.7_iter40.mlx"),
             timeout_s = 60)
     except ShellException as e:
         with open(LOG_DIR / (name + ".log"), "w") as log:

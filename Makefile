@@ -3,13 +3,13 @@ make = make --no-print-directory
 all: kazhdan fairing decomposition
 
 kazhdan:
-	$(make) -C thirdparty/IsoSurfaceExtraction
-	mv thirdparty/IsoSurfaceExtraction/Bin/Linux/IsoSurfaceExtraction bin
-	$(make) -C thirdparty/IsoSurfaceExtraction clean
+	$(make) -C ext/IsoSurfaceExtraction
+	mv ext/IsoSurfaceExtraction/Bin/Linux/IsoSurfaceExtraction bin
+	$(make) -C ext/IsoSurfaceExtraction clean
 
 fairing:
-	$(make) -C thirdparty/spinxFairingFast
-	cp thirdparty/spinxFairingFast/spinxFairingFast bin
+	$(make) -C ext/spinxFairingFast
+	cp ext/spinxFairingFast/spinxFairingFast bin
 
 decomposition:
 	$(make) -C cpp

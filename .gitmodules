@@ -1,5 +1,5 @@
 [submodule "thirdparty/IsoSurfaceExtraction"]
-	path = thirdparty/IsoSurfaceExtraction
+	path = ext/IsoSurfaceExtraction
 	url = https://github.com/mkazhdan/IsoSurfaceExtraction.git
 [submodule "shell"]
 	path = shell

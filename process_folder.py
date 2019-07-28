@@ -111,6 +111,8 @@ for f in BIN_DIR.iterdir():
 #-------------------------------------------------------------------------------
 # extract mesh with genus = 0
 #-------------------------------------------------------------------------------
+print("extract mesh with genus = 0")
+
 PLY_DIR1 = OUTPUT_DIR / "ply1" / experiment
 os.makedirs(PLY_DIR1, exist_ok=True)
 
@@ -130,6 +132,8 @@ for p in PLY_DIR0.iterdir():
 #-------------------------------------------------------------------------------
 # normalizing by size
 #-------------------------------------------------------------------------------
+print("normalizing by size")
+
 vol = CSV.Volume
 
 PLY_DIR2 = OUTPUT_DIR / "ply2" / experiment
@@ -168,6 +172,8 @@ for f in PLY_DIR1.iterdir():
 #-------------------------------------------------------------------------------
 # uniform remeshing
 #-------------------------------------------------------------------------------
+print("uniform remeshing")
+
 PLY_DIR3 = OUTPUT_DIR / "ply3" / experiment
 os.makedirs(PLY_DIR3, exist_ok=True)
 
@@ -186,8 +192,9 @@ for f in PLY_DIR2.iterdir():
     mm.readline(), mm.readline(), mm.readline()
     byte = ( "comment " + "s" * (mm.find(b'\n') - mm.tell() - 8) ).encode("latin-1")
     mm.write(byte)
-    mm.flush()
-    mm.close()
+
+mm.flush()
+mm.close()
 
 
 #-------------------------------------------------------------------------------

@@ -40,6 +40,5 @@ std::vector<std::vector<double>> read_coef(std::string coef_path)
         coef[i] = split(buf, ' ');
     }
 
-std::cout << "coef ok" << std::endl;
     return coef;
 }

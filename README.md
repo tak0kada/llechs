@@ -1,5 +1,5 @@
 # llechs
-Simple cellular shape analysis pipeline using spherical harmonic decomposition.
+Cellular shape analysis pipeline using spherical harmonic decomposition.
 
 Usage:
 ```

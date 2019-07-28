@@ -12,6 +12,7 @@ fairing:
 	cp ext/spinxFairingFast/spinxFairingFast bin
 
 decomposition:
-	$(make) -C cpp
+	$(make) -j -C cpp
 	mv cpp/calc_coef bin
 	mv cpp/recv_shape bin
+	mv cpp/post_acvd bin

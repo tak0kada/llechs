@@ -4,9 +4,12 @@ import pandas as pd
 from skimage import io
 import json
 from plyfile import PlyData
+import pyvista
+import pyacvd
 from pathlib import Path
 import shutil
 import os
+import mmap
 import re
 import shell
 from shell import ShellException
@@ -16,7 +19,7 @@ from shell import ShellException
 #-------------------------------------------------------------------------------
 SURFACE_AREA_CUTOFF = 70
 N_ITER_FAIRING = 20
-SPH_DEGREE = 10
+SPH_DEGREE = 12
 
 
 #-------------------------------------------------------------------------------
@@ -100,6 +103,7 @@ for f in BIN_DIR.iterdir():
     # any value which is 0 < x < 1 is fine, because input is binary file
     shell.exec("./bin/IsoSurfaceExtraction --flip --iso 0.95 --in {} --out {} --res {} {} {} --dim 1 1 {}"
         .format(f, g, x, y, z, z_interval))
+    # below does not make any change
     # shell.exec("./bin/IsoSurfaceExtraction --flip --quadratic --iso 0.9 --in {} --out {} --res {} {} {} --dim 1 1 {}"
     #     .format(f, g, x, y, z, z_interval))
 
@@ -142,22 +146,59 @@ for f in PLY_DIR1.iterdir():
     data.write(PLY_DIR2 / f.name)
 
 
+# #-------------------------------------------------------------------------------
+# # taubin smoothing
+# #-------------------------------------------------------------------------------
+# PLY_DIR3 = OUTPUT_DIR / "ply3" / experiment
+# os.makedirs(PLY_DIR3, exist_ok=True)
+#
+# for f in PLY_DIR2.iterdir():
+#     # name = f.name.rsplit(".", 1)[0]
+#     # g = PLY_DIR3 / (name + ".ply")
+#     g = PLY_DIR3 / f.name
+#     try:
+#         shell.exec(
+#             "meshlabserver -i {} -o {} -s {}".format(f, g, "./mlx/taubin_lambda0.7_iter40.mlx"),
+#             timeout_s = 60)
+#     except ShellException as e:
+#         with open(LOG_DIR / (name + ".log"), "w") as log:
+#             log.write(str(e))
+
+
 #-------------------------------------------------------------------------------
-# taubin smoothing
+# uniform remeshing
+#-------------------------------------------------------------------------------
+PLY_DIR3 = OUTPUT_DIR / "ply3" / experiment
+os.makedirs(PLY_DIR3, exist_ok=True)
+
+for f in PLY_DIR2.iterdir():
+    ply = pyvista.read(str(f))
+    clus = pyacvd.Clustering(ply)
+    clus.subdivide(4)
+    clus.cluster(ply.number_of_points * 11 // 10)
+    remesh = clus.create_mesh(flipnorm=False)
+    remesh.save(PLY_DIR3 / f.name)
+
+    # remove pyvtk header
+    fd = os.open(PLY_DIR3 / f.name, os.O_RDWR)
+    size = os.path.getsize(PLY_DIR3 / f.name)
+    mm = mmap.mmap(fd, size)
+    mm.readline(), mm.readline(), mm.readline()
+    byte = ( "comment " + "s" * (mm.find(b'\n') - mm.tell() - 8) ).encode("latin-1")
+    mm.write(byte)
+    mm.flush()
+    mm.close()
+
+
+#-------------------------------------------------------------------------------
+# post acvd fix
 #-------------------------------------------------------------------------------
 OBJ_DIR0 = OUTPUT_DIR / "obj0" / experiment
 os.makedirs(OBJ_DIR0, exist_ok=True)
 
-for f in PLY_DIR2.iterdir():
+for f in PLY_DIR3.iterdir():
     name = f.name.rsplit(".", 1)[0]
-    g = OBJ_DIR0 / (name + ".obj")
-    try:
-        shell.exec(
-            "meshlabserver -i {} -o {} -s {}".format(f, g, "./mlx/taubin_lambda0.7_iter40.mlx"),
-            timeout_s = 60)
-    except ShellException as e:
-        with open(LOG_DIR / (name + ".log"), "w") as log:
-            log.write(str(e))
+    shell.exec("./bin/post_acvd --input {} --output {}".format(f, OBJ_DIR0 / (name + ".obj")))
 
 
 #-------------------------------------------------------------------------------
@@ -185,8 +226,8 @@ os.makedirs(COEF_DIR, exist_ok=True)
 
 for f in OBJ_DIR1.iterdir():
     name = f.name.split("obj")[0][:-1]
-    n = int(f.name.split("obj")[1][:-1]) # times processed by fairing
-    if n != 20:
+    n = f.name.split("obj")[1][:-1] # times processed by fairing
+    if n != "20":
         continue
     else:
         xyz = list(OBJ_DIR0.glob(name + ".obj"))[0]

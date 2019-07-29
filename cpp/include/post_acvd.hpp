@@ -176,11 +176,25 @@ std::vector<Face> rm_border(const std::vector<Face> face)
         {
             if (kv.second.size() == 1)
             {
-                kv.second.clear();
-                idx[kv.second[0]] = true;
                 ++n_rm;
+                idx[kv.second[0]] = true;
+
+                for (std::size_t i = 0; i < 3; ++i)
+                {
+                    const auto& v = face[kv.second[0]].vertex;
+                    if (auto it = conn.find({std::min(v[i], v[(i+1)%3]), std::max(v[i], v[(i+1)%3])}); it->second.size() == 1)
+                    {
+                        it->second.clear();
+                    }
+                    else
+                    {
+                        auto& vec = it->second;
+                        vec.erase(std::find(vec.begin(), vec.end(), face[kv.second[0]].idx));
+                    }
+                }
             }
         }
+
         if (n_rm == 0)
         {
             break;
@@ -358,9 +372,20 @@ std::pair<std::vector<Vertex>, std::vector<Face>> parse_obj(const std::string& p
         }
         else if (buf == "f")
         {
-            std::size_t v0, v1, v2;
-            ifs >> v0 >> v1 >> v2;
-            face.push_back({fi, --v0, --v1, --v2});
+            std::size_t v[3] = {};
+            for (int i = 0; i < 3; ++i)
+            {
+                std::string s;
+                ifs >> s;
+                std::size_t pos{s.find_first_of("/")};
+                if (pos == std::string::npos)
+                {
+                    pos = s.size();
+                }
+                std::sscanf(s.substr(0, pos).c_str(), "%zu", &v[i]);
+            }
+            assert (v[0] != 0 && v[1] != 0 && v[2] != 0); // each face has three vetices
+            face.push_back({fi, --v[0], --v[1], --v[2]});
             ++fi;
         }
         ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

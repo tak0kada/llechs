@@ -137,7 +137,7 @@ namespace shape
 
     double shmap::coef(const unsigned int& l, const int& m, const std::vector<real_t>& data) const
     {
-        return distribution::util::coef(sphere, l, m, data, face_area);
+        return distribution::util::coef(this->sphere, l, m, data, face_area);
     }
 
     std::array<std::vector<real_t>, 3> shmap::calc_coef(const unsigned int& n_coef) const
@@ -178,26 +178,39 @@ namespace shape
         // 1D (l=1) spherical harmonics represent a spheroid
         Eigen::Matrix3d SH1D{};
         SH1D << coef(1, 1, x), coef(1, 1, y), coef(1, 1, z),
-                coef(1, -1, x), coef(1, -1, y), coef(1, 1, z),
+                coef(1, -1, x), coef(1, -1, y), coef(1, -1, z),
                 coef(1, 0, x), coef(1, 0, y), coef(1, 0, z);
-        Eigen::EigenSolver<Eigen::MatrixXd> solver{SH1D};
-        const auto val = solver.eigenvalues();
-        const auto vec = solver.eigenvectors().real();
+        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver{SH1D * SH1D.transpose()};
+        const auto val_c = solver.eigenvalues();
+        auto vec = solver.eigenvectors();
+        std::array<double, 3> val;
+        for (std::size_t i = 0; i < 3; ++i)
+        {
+            val[i] = val_c(i) * (vec.col(i).norm());
+            vec.col(i).normalize();
+        }
 
         std::array<int, 3> order{0, 1, 2};
-        std::sort(order.begin(), order.end(), [&val](int i, int j){return std::abs(val(i).real()) > std::abs(val(j).real());});
-        const Eigen::Vector3d ex = vec.col(order[0]);
-        const Eigen::Vector3d ey = vec.col(order[1]);
-        Eigen::Vector3d ez = vec.col(order[1]);
-        if (ez.dot(ex.cross(ey)) < 0)
-        {
-            ez = -ez;
-        }
-        Rot.col(0) = ex;
-        Rot.col(1) = ey;
-        Rot.col(2) = ez;
-
+        std::sort(order.begin(), order.end(),
+                [&val](int i, int j){ return std::abs(val[i]) > std::abs(val[j]); });
+        // const Eigen::Vector3d ex = vec.col(order[0]) * (val[order[0]] > 0? 1: -1);
+        // const Eigen::Vector3d ez = vec.col(order[2]) * (val[order[2]] > 0? 1: -1);
+        // const Eigen::Vector3d ey = ez.cross(ex);
+        // Rot.col(0) = ex;
+        // Rot.col(1) = ey;
+        // Rot.col(2) = ez;
+        //
+        // sphere.rotate(Rot.transpose());
+        Rot(0, 0) = std::abs(val[order[0]]);
+        Rot(1, 1) = std::abs(val[order[1]]);
+        Rot(2, 2) = std::abs(val[order[2]]);
+        Rot = Rot * SH1D.inverse();
+std::cout << "SH1D" << SH1D << std::endl;
+std::cout << "Rot" << Rot << std::endl;
+std::cout << sphere.vertex[0] << std::endl;
         sphere.rotate(Rot);
+std::cout << Rot * SH1D << std::endl;
+std::cout << sphere.vertex[0] << std::endl;
     }
 }; // end of namespace shape
 

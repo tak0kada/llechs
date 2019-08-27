@@ -128,6 +128,8 @@ for p in PLY_DIR0.iterdir():
     if ((2 - nV + nE - nF) // 2) == 0:
         shutil.move(str(p), str(PLY_DIR1 / p.name))
 
+print("done")
+
 
 #-------------------------------------------------------------------------------
 # normalizing by size
@@ -148,6 +150,8 @@ for f in PLY_DIR1.iterdir():
     data['vertex']['y'] *= vol[i]**(-1/3) * 4
     data['vertex']['z'] *= vol[i]**(-1/3) * 4
     data.write(PLY_DIR2 / f.name)
+
+print("done")
 
 
 # #-------------------------------------------------------------------------------
@@ -195,6 +199,8 @@ for f in PLY_DIR2.iterdir():
 
 mm.flush()
 mm.close()
+
+print("done")
 
 
 #-------------------------------------------------------------------------------
